@@ -1,0 +1,48 @@
+﻿{% extends 'movies/base.html' %}
+{% block title %}Файлы{% endblock %}
+
+{% block content %}
+<h2>Содержимое хранилища</h2>
+
+{% if not files %}
+    <div class="empty">
+        <strong>Файлов пока нет</strong>
+        Добавьте фильм через форму или загрузите JSON/XML.
+    </div>
+{% else %}
+    {% for f in files %}
+        <div class="file-block">
+            <h3>
+                {{ f.name }}
+                <span class="badge {{ f.fmt }}">{{ f.fmt|upper }}</span>
+            </h3>
+            {% if f.error %}
+                <p style="color:#991b1b; margin:0;">Ошибка: {{ f.error }}</p>
+            {% else %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Название</th>
+                            <th>Режиссёр</th>
+                            <th>Год</th>
+                            <th>Жанр</th>
+                            <th>Рейтинг</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for m in f.movies %}
+                            <tr>
+                                <td>{{ m.title }}</td>
+                                <td>{{ m.director }}</td>
+                                <td>{{ m.year }}</td>
+                                <td>{{ m.genre }}</td>
+                                <td>{{ m.rating }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+    {% endfor %}
+{% endif %}
+{% endblock %}

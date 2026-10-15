@@ -1,0 +1,255 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Фильмы{% endblock %}</title>
+    <style>
+        :root {
+            --primary: #7c3aed;
+            --primary-dark: #1d4ed8;
+            --primary-light: #eff6ff;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, "Segoe UI", Roboto, system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 32px 20px 60px;
+            line-height: 1.55;
+            font-size: 15px;
+        }
+
+        h1 {
+            font-size: 1.6em;
+            margin: 0 0 6px;
+            font-weight: 700;
+        }
+        h2 {
+            font-size: 1.2em;
+            margin: 28px 0 14px;
+            font-weight: 600;
+        }
+        h3 {
+            font-size: 1em;
+            margin: 0 0 10px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* Меню */
+        nav {
+            display: flex;
+            gap: 4px;
+            margin: 18px 0 24px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+        }
+        nav a {
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            color: var(--muted);
+            font-weight: 500;
+            font-size: .95em;
+            transition: background .12s, color .12s;
+        }
+        nav a:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        /* Сообщения */
+        .msg {
+            padding: 10px 14px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-size: .93em;
+            border: 1px solid;
+        }
+        .msg.success {
+            background: #f0fdf4;
+            color: #166534;
+            border-color: #bbf7d0;
+        }
+        .msg.error {
+            background: #fef2f2;
+            color: #991b1b;
+            border-color: #fecaca;
+        }
+
+        /* Формы */
+        form {
+            background: var(--card);
+            padding: 20px 22px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+        form p {
+            margin: 12px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        form label {
+            font-weight: 500;
+            font-size: .88em;
+            color: var(--muted);
+        }
+        input[type="text"],
+        input[type="number"],
+        input[type="file"],
+        select {
+            padding: 9px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1em;
+            font-family: inherit;
+            background: #fff;
+            color: var(--text);
+            transition: border-color .12s, box-shadow .12s;
+            width: 100%;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+        button {
+            padding: 9px 18px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: .95em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background .12s;
+            margin-top: 8px;
+        }
+        button:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Ошибки валидации */
+        .errorlist {
+            list-style: none;
+            padding: 0;
+            margin: 2px 0 0;
+            color: #dc2626;
+            font-size: .85em;
+        }
+        .errorlist li::before { content: "• "; }
+
+        /* Блок файла */
+        .file-block {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 14px;
+        }
+        .file-block h3 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            font-family: ui-monospace, Consolas, monospace;
+            font-size: .88em;
+            color: var(--muted);
+            font-weight: 500;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: .7em;
+            font-weight: 600;
+            letter-spacing: .03em;
+            text-transform: uppercase;
+            font-family: inherit;
+        }
+        .badge.json { background: #fef3c7; color: #92400e; }
+        .badge.xml  { background: #dbeafe; color: #1e40af; }
+
+        /* Таблицы */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 8px 0 4px;
+            font-size: .93em;
+        }
+        th, td {
+            padding: 9px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        th {
+            font-weight: 600;
+            font-size: .8em;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+            color: var(--muted);
+            background: #f9fafb;
+        }
+        tbody tr:hover td { background: #f9fafb; }
+
+        /* Пустое состояние */
+        .empty {
+            text-align: center;
+            padding: 50px 20px;
+            background: var(--card);
+            border-radius: 10px;
+            border: 1px dashed var(--border);
+            color: var(--muted);
+            font-size: .95em;
+        }
+        .empty strong { color: var(--text); display: block; margin-bottom: 6px; }
+
+        /* Подсказка */
+        .hint {
+            background: var(--card);
+            padding: 14px 18px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            font-size: .88em;
+            line-height: 1.7;
+        }
+        .hint code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: ui-monospace, Consolas, monospace;
+            font-size: .9em;
+            color: #334155;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎬 Фильмы — JSON / XML</h1>
+    <nav>
+        <a href="{% url 'movies:index' %}">Добавить фильм</a>
+        <a href="{% url 'movies:upload' %}">Загрузить файл</a>
+        <a href="{% url 'movies:list_files' %}">Просмотр файлов</a>
+    </nav>
+
+    {% if messages %}
+        {% for m in messages %}
+            <div class="msg {{ m.tags }}">{{ m }}</div>
+        {% endfor %}
+    {% endif %}
+
+    {% block content %}{% endblock %}
+</body>
+</html>

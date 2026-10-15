@@ -1,0 +1,22 @@
+﻿{% extends 'movies/base.html' %}
+{% block title %}Загрузка файла{% endblock %}
+
+{% block content %}
+<h2>Загрузить файл JSON / XML</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <p>
+        <label for="datafile">Выберите файл</label>
+        <input type="file" name="datafile" id="datafile" accept=".json,.xml" required>
+    </p>
+    <button type="submit">Загрузить и проверить</button>
+</form>
+
+<p style="margin-top:14px;"></p>
+
+<div class="hint">
+    <b>JSON:</b> <code>[{"title":"...","director":"...","year":2000,"genre":"drama","rating":8.5}]</code><br>
+    <b>XML:</b> <code>&lt;movies&gt;&lt;movie&gt;...&lt;/movie&gt;&lt;/movies&gt;</code>
+</div>
+{% endblock %}
