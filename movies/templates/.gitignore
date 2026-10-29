@@ -1,23 +1,5 @@
-# Python
 __pycache__/
-*.py[cod]
-*.egg-info/
-
-# Virtual environment
-.venv/
-venv/
-
-# Django
+*.pyc
 db.sqlite3
-db.sqlite3-journal
-*.log
-
-# Media (загруженные файлы)
 media/
-
-# Тестовые файлы
-test.json
-bad.json
-
-# VS Code
-.vscode/
+.env

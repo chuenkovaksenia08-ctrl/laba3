@@ -12,7 +12,7 @@ GENRES = [
     ('documentary', 'Документальный'),
 ]
 
-CURRENT_YEAR = datetime.date.today().year
+CURRENT_YEAR = datetime.date.today().year #2026
 FIRST_MOVIE_YEAR = 1888
 
 
@@ -40,3 +40,17 @@ class MovieForm(forms.Form):
         if len(value) < 2:
             raise forms.ValidationError('Слишком короткое имя режиссёра.')
         return value
+        STORAGE_CHOICES = [('db', 'База данных'), ('file', 'Файл')]
+FORMAT_CHOICES  = [('json', 'JSON'), ('xml', 'XML')]
+
+class MovieForm(forms.Form):
+    # ... существующие поля title/director/year/genre/rating ...
+
+    storage = forms.ChoiceField(
+        label='Куда сохранить', choices=STORAGE_CHOICES,
+        initial='db', widget=forms.RadioSelect,
+    )
+    format = forms.ChoiceField(
+        label='Формат файла', choices=FORMAT_CHOICES,
+        required=False, initial='json',
+    )
