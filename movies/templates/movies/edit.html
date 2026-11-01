@@ -1,0 +1,30 @@
+{% extends 'movies/base.html' %}
+{% block content %}
+<div class="card shadow-sm" style="max-width: 600px; margin: 0 auto;">
+    <div class="card-body">
+        <h2 class="mb-4">Редактировать: {{ movie.title }}</h2>
+        <form method="post">
+            {% csrf_token %}
+            
+            <!-- ВОТ ЭТИ ДВЕ СТРОЧКИ РЕШАЮТ ПРОБЛЕМУ СОХРАНЕНИЯ -->
+            <input type="hidden" name="storage" value="db">
+            <input type="hidden" name="format" value="json">
+
+            {% for field in form %}
+                {% if field.name != 'storage' and field.name != 'format' %}
+                    <div class="mb-3">
+                        <label class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="text-danger small">{{ field.errors }}</div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+            
+            <button type="submit" class="btn btn-success">Сохранить изменения</button>
+            <a href="{% url 'movies:list_all' %}" class="btn btn-secondary">Отмена</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -7,26 +7,27 @@ from xml.dom import minidom
 
 from django.conf import settings
 
+# Папка хранения файлов; создаётся автоматически.
 DATA_DIR = os.path.join(settings.MEDIA_ROOT, 'movies_data')
 os.makedirs(DATA_DIR, exist_ok=True)
 
 MOVIE_FIELDS = ['title', 'director', 'year', 'genre', 'rating']
 ALLOWED_EXT = {'json', 'xml'}
 
-
 def sanitize_filename(name: str) -> str:
+    """Очищает имя файла от небезопасных символов"""
     base = os.path.basename(name)
     base = re.sub(r'[^A-Za-z0-9._-]', '_', base)
     base = base.strip('._') or 'file'
     return base[:100]
 
-
 def generate_filename(ext: str, original: str | None = None) -> str:
+    """Уникальное имя файла: 'upload_...' для загрузок, 'movies_...' для системных."""
     prefix = 'upload' if original else 'movies'
     return f"{prefix}_{uuid.uuid4().hex}.{ext}"
 
-
 def validate_movie_dict(movie) -> tuple[bool, str]:
+    """Проверяет один фильм."""
     if not isinstance(movie, dict):
         return False, 'элемент не является объектом'
     for field in MOVIE_FIELDS:
@@ -50,8 +51,8 @@ def validate_movie_dict(movie) -> tuple[bool, str]:
         return False, 'пустой режиссёр'
     return True, ''
 
-
 def validate_data(data) -> tuple[bool, str]:
+    """Проверяет список фильмов или один фильм."""
     if isinstance(data, list):
         if not data:
             return False, 'файл не содержит ни одного фильма'
@@ -64,8 +65,8 @@ def validate_data(data) -> tuple[bool, str]:
         return validate_movie_dict(data)
     return False, 'неверная структура данных'
 
-
 def _movie_to_clean_dict(movie: dict) -> dict:
+    """Нормализует типы и обрезает пробелы перед записью."""
     return {
         'title':    str(movie['title']).strip(),
         'director': str(movie['director']).strip(),
@@ -74,11 +75,12 @@ def _movie_to_clean_dict(movie: dict) -> dict:
         'rating':   float(movie['rating']),
     }
 
-
 def save_movies_to_file(movies: list[dict], fmt: str) -> str:
+    """Сохраняет фильмы в JSON или XML, возвращает имя файла."""
     fmt = fmt.lower()
     if fmt not in ALLOWED_EXT:
         raise ValueError('Недопустимый формат')
+
     movies = [_movie_to_clean_dict(m) for m in movies]
     filename = generate_filename(fmt)
     path = os.path.join(DATA_DIR, filename)
@@ -97,10 +99,11 @@ def save_movies_to_file(movies: list[dict], fmt: str) -> str:
         pretty = minidom.parseString(raw).toprettyxml(indent='  ', encoding='utf-8')
         with open(path, 'wb') as f:
             f.write(pretty)
+
     return filename
 
-
 def parse_file(path: str, fmt: str):
+    """Читает JSON или XML. Для XML корень должен быть <movies>."""
     fmt = fmt.lower()
     if fmt == 'json':
         with open(path, 'r', encoding='utf-8') as f:
@@ -120,7 +123,7 @@ def parse_file(path: str, fmt: str):
         return movies
     raise ValueError('Неподдерживаемый формат')
 
-
 def detect_format(filename: str) -> str | None:
+    """Определяет формат по расширению: 'json', 'xml' или None."""
     ext = filename.rsplit('.', 1)[-1].lower() if '.' in filename else ''
     return ext if ext in ALLOWED_EXT else None
