@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure--!&&73vdeiz)uywtd=a5fgun1v@u%0830r-_hkdvad83r9(de_
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
+CSRF_TRUSTED_ORIGINS = ['https://movies-project.de1.netrun.io']
 
 # Application definition
 
